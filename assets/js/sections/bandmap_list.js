@@ -329,4 +329,22 @@ function loadMap(dxspots) {
 	map.setView([30, 0], 1.5);
 
 	var osm = new L.TileLayer(osmUrl, {minZoom: 1, maxZoom: 9, attribution: osmAttrib});
+
+	var redIcon = L.icon({
+		iconUrl: icon_dot_url,
+		iconSize: [10, 10], // size of the icon
+	});
+
+	var counter = 0;
+
+	$.each(dxspots, function(k, v) {
+		counter++;
+		// Need to fix so that marker is placed at same place as end of line, but this only needs to be done when longitude is < -170
+		if (this.dxcc_spotted.lat < -170) {
+			this.dxcc_spotted.lat =  parseFloat(this.ldxcc_spotted.lat)+360;
+		}
+
+		var marker = L.marker([this.dxcc_spotted.lat, this.dxcc_spotted.lng], {icon: redIcon}).addTo(map);
+	});
 }
+
