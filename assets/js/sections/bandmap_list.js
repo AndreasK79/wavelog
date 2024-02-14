@@ -280,7 +280,6 @@ $('.radios').change(updateFromCAT);
 });
 
 function mapSpots() {
-
 	$('#mapButton').prop("disabled", true);
 
 	amap = $('#spotmap').val();
@@ -307,7 +306,13 @@ function loadMap(dxspots) {
 	// If map is already initialized
 	var container = L.DomUtil.get('spotmap');
 
-	var bounds = L.latLngBounds()
+	var bounds = L.latLngBounds();
+
+	if(container != null){
+		container._leaflet_id = null;
+		container.remove();
+		$("#spotmapcontainer").append('<div id="spotmap"></div>');
+	}
 
 	map = new L.Map('spotmap', {
 		fullscreenControl: true,
