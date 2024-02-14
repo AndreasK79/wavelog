@@ -1,27 +1,60 @@
 <script>
 	var dxcluster_provider="<?php echo base_url(); ?>index.php/dxcluster";
-	var dxcluster_maxage=<?php echo $this->optionslib->get_option('dxcluster_maxage'); ?>;
 	var cat_timeout_interval="<?php echo $this->optionslib->get_option('cat_timeout_interval'); ?>";
+	var dxcluster_maxage=<?php echo $this->optionslib->get_option('dxcluster_maxage'); ?>;
+	var custom_date_format = "<?php echo $custom_date_format ?>";
 </script>
+
+<style>
+.spotted_call {
+	cursor: alias;
+}
+
+.kHz::after {
+	content: " kHz";
+}
+
+.bandlist {
+	-webkit-transition: all 15s ease;
+	-moz-transition: all 15s ease;
+	-o-transition: all 15s ease;
+  	transition: 15s;
+}
+.fresh{
+    /* -webkit-transition: all 15s ease;
+    -moz-transition: all 15s ease;
+    -o-transition: all 15s ease; */
+    transition: all 500ms ease;
+    --bs-table-bg:			#3981b2;
+	--bs-table-accent-bg:	#3981b2;
+}
+tbody a {
+  	color: inherit;
+  	text-decoration: none;
+}
+</style>
 
 
 <div class="container">
 <br>
 <center><button type="button" class="btn" id="menutoggle"><i class="fa fa-arrow-up" id="menutoggle_i"></i></button></center>
+
 <h2 id="dxtitle"><?php echo $page_title; ?></h2>
-<div class="tabs" id="dxtabs">
+
+<div id="dxtabs" class="tabs">
 		<ul class="nav nav-tabs" id="myTab" role="tablist">
 			<li class="nav-item">
-				<a class="nav-link active" href="index">BandMap</a>
+				<a class="nav-link" href="index">BandMap</a>
 			</li>
 			<li class="nav-item">
 				<a class="nav-link" href="list">BandList</a>
 			</li>
-		</ul>
-		<li class="nav-item">
+			<li class="nav-item">
 				<a class="nav-link active" href="map">Map</a>
 			</li>
+		</ul>
 </div>
+
 <div class="tab-content" id="myTabContent">
 <div class="messages my-1 me-2"></div>
 <div class="d-flex align-items-center">
@@ -32,7 +65,6 @@
 			<option value="<?php echo $row->id; ?>" <?php if($this->session->userdata('radio') == $row->id) { echo "selected=\"selected\""; } ?>><?php echo $row->radio; ?></option>
 			<?php } ?>
 		</select>
-
 		<label class="my-1 me-2" for="decontSelect">Spots de</label>
 		<select class="form-select form-select-sm my-1 me-sm-2 w-auto" id="decontSelect" name="dxcluster_decont" aria-describedby="dxcluster_decontHelp" required>
 				<option value="Any">*</option>
@@ -47,6 +79,7 @@
 
 		<label class="my-1 me-2" for="band"><?php echo lang('gen_hamradio_band'); ?></label>
 		<select id="band" class="form-select form-select-sm my-1 me-sm-2 w-auto" name="band">
+			<option value="All">All</option>
 			<?php foreach($bands as $key=>$bandgroup) {
 					echo '<optgroup label="' . strtoupper($key) . '">';
 					foreach($bandgroup as $band) {
@@ -58,12 +91,13 @@
 				}
 			?>
 		</select>
+		<button type="button" class="btn btn-sm btn-primary me-1" id="mapButton" onclick="mapSpots();"><?php echo lang('filter_map'); ?></button>
 	</div>
 
-<figure class="highcharts-figure">
-    <div id="bandmap"></div>
-    <p class="highcharts-description">
-    </p>
-</figure>
+                <p><div id="spotmapcontainer"></div>
+
+
+            </div>
+
 </div>
 </div>

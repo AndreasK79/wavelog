@@ -49,6 +49,9 @@ tbody a {
 			<li class="nav-item">
 				<a class="nav-link active" href="list">BandList</a>
 			</li>
+			<li class="nav-item">
+				<a class="nav-link active" href="map">Map</a>
+			</li>
 		</ul>
 </div>
 

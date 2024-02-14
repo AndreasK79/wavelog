@@ -841,3 +841,8 @@ label {
 #locator, #distance, #bearing {
     width: 120px;
 }
+
+#spotmap {
+	height: calc(100vh - 280px) !important;
+	max-height: 1000px !important;
+}

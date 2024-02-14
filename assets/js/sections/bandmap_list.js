@@ -16,13 +16,13 @@ $(function() {
 				{
 					'targets': 1, "type":"num",
 					'createdCell':  function (td, cellData, rowData, row, col) {
-						$(td).addClass("kHz"); 
+						$(td).addClass("kHz");
 					}
 				},
 				{
 					'targets': 2,
 					'createdCell':  function (td, cellData, rowData, row, col) {
-						$(td).addClass("spotted_call"); 
+						$(td).addClass("spotted_call");
 						// $(td).attr( "title", "Click to prepare logging" );
 					}
 				}
@@ -78,7 +78,7 @@ $(function() {
 							}
 							lotw_badge='<a id="lotw_badge" style="float: right;" href="https://lotw.arrl.org/lotwuser/act?act='+single.spotted+'" target="_blank"><small id="lotw_infox" class="badge text-bg-success '+lclass+'" data-bs-toggle="tooltip" title="LoTW User. Last upload was '+single.dxcc_spotted.lotw_user+' days ago">L</small></a>';
 						}
-							
+
 						data[0]=[];
 						data[0].push(single.when_pretty);
 						data[0].push(single.frequency*1);
@@ -97,12 +97,12 @@ $(function() {
 							oldtable.each( function (srow) {
 								if (JSON.stringify(srow) === JSON.stringify(data[0])) {
 									update=true;
-								} 
+								}
 							});
 							if (!update) { 	// Sth. Fresh? So highlight
 								table.rows.add(data).draw().nodes().to$().addClass("fresh");
-							} else { 
-								table.rows.add(data).draw(); 
+							} else {
+								table.rows.add(data).draw();
 							}
 						} else {
 							table.rows.add(data).draw();
@@ -215,7 +215,7 @@ $(function() {
 			$('#menutoggle_i').addClass('fa-arrow-down');
 		}
 	});
-	
+
 	var updateFromCAT = function() {
 	if($('select.radios option:selected').val() != '0') {
 		radioID = $('select.radios option:selected').val();
@@ -278,3 +278,55 @@ setInterval(updateFromCAT, 3000);
 $('.radios').change(updateFromCAT);
 
 });
+
+function mapSpots() {
+
+	$('#mapButton').prop("disabled", true);
+
+	amap = $('#spotmap').val();
+	if (amap == undefined) {
+		$("#spotmapcontainer").append('<div id="spotmap"></div>');
+	}
+
+	if ((band != '') && (band !== undefined)) {
+		let dxurl = dxcluster_provider + "/spots/" + $('#band option:selected').val() + "/" +dxcluster_maxage + "/" + $('#decontSelect option:selected').val();
+		$.ajax({
+			url: dxurl,
+			cache: false,
+			dataType: "json"
+		}).done(function(dxspots) {
+			loadMap(dxspots);
+		});
+	}
+};
+
+function loadMap(dxspots) {
+	$('#mapButton').prop("disabled", false);
+	var osmUrl='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+	var osmAttrib='Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
+	// If map is already initialized
+	var container = L.DomUtil.get('spotmap');
+
+	var bounds = L.latLngBounds()
+
+	map = new L.Map('spotmap', {
+		fullscreenControl: true,
+		fullscreenControlOptions: {
+			position: 'topleft'
+		},
+	});
+
+	L.tileLayer(
+		osmUrl,
+		{
+			attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+			maxZoom: 18,
+			zoom: 3,
+            minZoom: 2,
+		}
+	).addTo(map);
+
+	map.setView([30, 0], 1.5);
+
+	var osm = new L.TileLayer(osmUrl, {minZoom: 1, maxZoom: 9, attribution: osmAttrib});
+}
