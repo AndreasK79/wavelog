@@ -17,10 +17,10 @@
 			<li class="nav-item">
 				<a class="nav-link" href="list">BandList</a>
 			</li>
-		</ul>
-		<li class="nav-item">
-				<a class="nav-link active" href="map">Map</a>
+			<li class="nav-item">
+				<a class="nav-link" href="map">Map</a>
 			</li>
+		</ul>
 </div>
 <div class="tab-content" id="myTabContent">
 <div class="messages my-1 me-2"></div>
