@@ -46,6 +46,7 @@ class Stationsetup extends CI_Controller {
 				$this->stations->delete($id2del);
 				$this->load->model('user_options_model');
 				$this->user_options_model->del_option('eqsl_default_qslmsg', 'key_station_id', array('option_key' => $id2del));
+				$this->user_options_model->del_option('station_location', 'is_favorite', array('option_key'=>$id2del));
 				$data['success']=1;
 			} else {
 				$data['success']=0;
