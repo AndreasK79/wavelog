@@ -47,6 +47,7 @@
 <script type="text/javascript" src="<?php echo base_url() ;?>assets/js/sections/common.js"></script>
 <script type="text/javascript" src="<?php echo base_url() ;?>assets/js/sections/eqslcharcounter.js"></script>
 <script type="text/javascript" src="<?php echo base_url() ;?>assets/js/sections/version_dialog.js"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/js/sections/header.js"></script>
 
 <script src="<?php echo base_url(); ?>assets/js/htmx.min.js"></script>
 
@@ -91,18 +92,6 @@ if($this->session->userdata('user_id') != null) {
 ?>
 
 <!-- Version Dialog END -->
-
-<script>
-    function set_active_location(current_active, new_active) {
-        $.ajax({
-            url: base_url + 'index.php/station/set_active/' + current_active + '/' + new_active + '/1',
-            type: 'GET',
-            success: function(response) {
-                location.reload();
-            }
-        });
-    }
-</script>
 
 <?php if ($this->uri->segment(1) == "oqrs") { ?>
     <script src="<?php echo base_url() ;?>assets/js/sections/oqrs.js"></script>

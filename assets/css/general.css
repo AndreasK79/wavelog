@@ -7,6 +7,13 @@
 
 /* ============  HEADER MENU ============ */
 /* Adapted from https://bootstrap-menu.com/detail-multilevel.html  */
+
+#header_quickswitch_table {
+	--bs-table-border-color: #00000000 !important;
+	--bs-table-accent-bg: #00000000 !important;
+	margin-bottom: 0 !important;
+}
+
 /* ============ desktop view ============ */
 @media all and (min-width: 992px) {
 
