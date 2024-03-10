@@ -14,6 +14,11 @@ $(document).ready(function () {
 			url: getDataTablesLanguageUrl(),
 		}
 	});
+
+	$(document).on('click','.editSatmode', function (e) {
+		editSatmode(e.currentTarget.id);
+	});
+
 });
 
 function createSatelliteDialog() {
@@ -200,7 +205,7 @@ function restoreLine(id) {
     );
 
 	$(".satmode_" + id).find("#saveButton").replaceWith(
-        '<td style="text-align: center; vertical-align: middle;" id="editButton">' + '<button type="button" class="btn btn-sm btn-success" onclick="editSatmode(' + id + ');' + '"><i class="fas fa-edit"></i></button>' + '</td>'
+        '<td style="text-align: center; vertical-align: middle;" id="editButton">' + '<button type="button" class="btn btn-sm btn-success editSatmode" id="' + id + '"><i class="fas fa-edit"></i></button>' + '</td>'
     );
 }
 
@@ -247,11 +252,11 @@ function addSatMode() {
 	});
 
 	$(".savenewline").click(function() {
-		var modename = $(this).closest("tr").find('td:eq(0)').html();
-		var uplink_mode = $(this).closest("tr").find('td:eq(1)').html();
-		var uplink_freq = $(this).closest("tr").find('td:eq(2)').html();
-		var downlink_mode = $(this).closest("tr").find('td:eq(3)').html();
-		var downlink_freq = $(this).closest("tr").find('td:eq(4)').html();
+		var modename = $(this).closest("tr").find('td:eq(0)');
+		var uplink_mode = $(this).closest("tr").find('td:eq(1)');
+		var uplink_freq = $(this).closest("tr").find('td:eq(2)');
+		var downlink_mode = $(this).closest("tr").find('td:eq(3)');
+		var downlink_freq = $(this).closest("tr").find('td:eq(4)');
 		var id = $('#satelliteid').val();
 
 		var tempthis = this;
@@ -260,23 +265,29 @@ function addSatMode() {
 			type: 'post',
 			data: {
 				'id': id,
-				'name': modename,
-				'uplink_mode': uplink_mode,
-				'uplink_freq': uplink_freq,
-				'downlink_mode': downlink_mode,
-				'downlink_freq': downlink_freq,
+				'name': modename.html(),
+				'uplink_mode': uplink_mode.html(),
+				'uplink_freq': uplink_freq.html(),
+				'downlink_mode': downlink_mode.html(),
+				'downlink_freq': downlink_freq.html(),
 			},
 			success: function (data) {
+				modename.attr('id','modename_'+data.new_id);
+				uplink_mode.attr('id','uplink_mode_'+data.new_id);
+				uplink_freq.attr('id','uplink_freq_'+data.new_id);
+				downlink_mode.attr('id','downlink_mode_'+data.new_id);
+				downlink_freq.attr('id','downlink_freq_'+data.new_id);
 				var tbl_row = $(tempthis).closest('tr');
+				tbl_row.addClass("satmode_"+data.new_id);
 				tbl_row.find('.row_data')
 				.attr('contenteditable', 'false')
 				.removeClass('bg-danger');
 				tbl_row.find("#cancelButton").replaceWith(
-					'<td style="text-align: center; vertical-align: middle;" id="deleteButton">' + '<button type="button" class="btn btn-sm btn-danger" onclick="deleteSatmode();' + '"><i class="fas fa-trash-alt"></i></button>' + '</td>'
+					'<td style="text-align: center; vertical-align: middle;" id="deleteButton">' + '<button type="button" class="btn btn-sm btn-danger" onclick="deleteSatmode('+data.new_id+');' + '"><i class="fas fa-trash-alt"></i></button>' + '</td>'
 				);
 
 				tbl_row.find("#saveButton").replaceWith(
-					'<td style="text-align: center; vertical-align: middle;" id="editButton">' + '<button type="button" class="btn btn-sm btn-success" onclick="editSatmode();' + '"><i class="fas fa-edit"></i></button>' + '</td>'
+					'<td style="text-align: center; vertical-align: middle;" id="editButton">' + '<button type="button" class="btn btn-sm btn-success editSatmode" id="' + data.new_id +'"><i class="fas fa-edit"></i></button>' + '</td>'
 				);
 			}
 		});
