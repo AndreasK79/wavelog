@@ -117,7 +117,9 @@ class Satellite extends CI_Controller {
 
 	public function addSatMode() {
 		$this->load->model('satellite_model');
-        $this->satellite_model->insertSatelliteMode();
+        	$new_id=$this->satellite_model->insertSatelliteMode();
+		header('Content-Type: application/json');
+		echo json_encode(array('new_id' => $new_id));
 	}
 
 }
