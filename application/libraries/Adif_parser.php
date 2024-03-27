@@ -151,16 +151,18 @@ class ADIF_Parser
 		$recordsplit = preg_split($pattern, $record, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 
         foreach($recordsplit as $r) {
+			if (str_contains($r, '<')) {
 				$pattern = "/\d+((:\D)?)+>/";
-                $res = preg_split($pattern, $r, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
-                $pattern = "/\<(.*?)\:/";
-                preg_match($pattern, $res[0], $match);
-                $pattern = "/\d+/";
-                preg_match($pattern, $r, $fulltag);
-                $tag = $match[1];
-                $value = (isset($res[2])?trim($res[2]):(isset($res[1])?trim($res[1]):''));
-                $value = mb_substr($value, 0, $fulltag[0], "UTF-8");
-                $return[mb_strtolower($tag, "UTF-8")] = $value;
+				$res = preg_split($pattern, $r, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+				$pattern = "/\<(.*?)\:/";
+				preg_match($pattern, $res[0], $match);
+				$pattern = "/\d+/";
+				preg_match($pattern, $r, $fulltag);
+				$tag = $match[1];
+				$value = (isset($res[2])?trim($res[2]):(isset($res[1])?trim($res[1]):''));
+				$value = mb_substr($value, 0, $fulltag[0], "UTF-8");
+				$return[mb_strtolower($tag, "UTF-8")] = $value;
+			}
         }
 
         return $return;
