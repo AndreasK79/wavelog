@@ -11,7 +11,7 @@ class Update extends CI_Controller {
     function __construct()
 	{
 		parent::__construct();
-		
+
 		if (ENVIRONMENT == 'maintenance' && $this->session->userdata('user_id') == '') {
             echo "Maintenance Mode is active. Try again later.\n";
 			redirect('user/login');
@@ -342,20 +342,15 @@ class Update extends CI_Controller {
             return;
         }
         $this->db->empty_table("lotw_users");
-        $i = 0;
-        $data = fgetcsv($handle,1000,",");
+        $data = fgetcsv($handle,100,",");
         do {
             if ($data[0]) {
-                $lotwdata[$i]['callsign'] = $data[0];
-                $lotwdata[$i]['lastupload'] = $data[1] . ' ' . $data[2];
-                if (($i % 2000) == 0) {
-                    $this->db->insert_batch('lotw_users', $lotwdata);
-                    unset($lotwdata);
-                    // echo 'Record ' . $i . '<br />';
-                }
-                $i++;
+				$lotwdata[] = array(
+					'callsign' => $data[0],
+					'lastupload' => $data[1] . ' ' . $data[2]
+				);
             }
-        } while ($data = fgetcsv($handle,1000,","));
+        } while ($data = fgetcsv($handle,100,","));
         fclose($handle);
 
         $this->db->insert_batch('lotw_users', $lotwdata);
@@ -366,7 +361,7 @@ class Update extends CI_Controller {
         $endtime = $mtime;
         $totaltime = ($endtime - $starttime);
         echo "This page was created in ".$totaltime." seconds <br />";
-        echo "Records inserted: " . $i . " <br/>";
+        echo "Records inserted: " . count($lotwdata) . " <br/>";
         $datetime = new DateTime("now", new DateTimeZone('UTC'));
         $datetime = $datetime->format('Ymd h:i');
         $this->optionslib->update('lotw_users_update', $datetime , 'no');
