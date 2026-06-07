@@ -29,6 +29,26 @@ class API extends CI_Controller {
 	}
 
 	/**
+	 * Return 401 - Missing or wrong API key
+	 */
+	private function _missing_or_wrong_api_key() {
+		http_response_code(401);
+		log_message("Debug",'API Call 401. Invalid API Key');
+		echo json_encode(['status' => 'error', 'reason' => "missing or wrong api key"]);
+		die();
+	}
+
+	/**
+	 * Return 403 - Insufficient permissions for API key
+	 */
+	private function _insufficient_permissions_api_key() {
+		http_response_code(403);
+		log_message("Debug",'API Call 403. Insufficient permissions for API Key');
+		echo json_encode(['status' => 'error', 'reason' => "API key does not have write permissions"]);
+		die();
+	}
+
+	/**
 	 * Check rate limit for current endpoint
 	 * Only enforced if api_rate_limits config is set
 	 *
@@ -168,17 +188,11 @@ class API extends CI_Controller {
 		$apiKeyResponse = $this->api_model->authorize($key ?? '');
 
 		if ($apiKeyResponse == 0) {
-			http_response_code(401);
-			log_message("Debug",'API Call 401. Invalid API Key: '.($obj['key'] ?? 'N/A'));
-			echo json_encode(['status' => 'error', 'reason' => "missing or wrong api key"]);
-			die();
+			$this->_missing_or_wrong_api_key();
 		}
 
 		if ($apiKeyResponse == 1) {
-			http_response_code(403);
-			log_message("Debug",'API Call 403. Insufficient permissions for API Key');
-			echo json_encode(['status' => 'error', 'reason' => "API key does not have write permissions"]);
-			die();
+			$this->_insufficient_permissions_api_key();
 		}
 
 		$this->load->model('club_model');
@@ -276,14 +290,7 @@ class API extends CI_Controller {
 	function check_auth($key = '') {
 		$this->load->model('api_model');
 		if($this->api_model->access($key ?? '') == "No Key Found" || $this->api_model->access($key ?? '') == "Key Disabled") {
-			// set the content type as json
-			header("Content-type: application/json");
-
-			// set the http response code to 401
-			http_response_code(401);
-
-			// return the json with the status as failed
-			echo json_encode(['status' => 'failed', 'reason' => "missing or invalid api key"]);
+			$this->_missing_or_wrong_api_key();
 		} else {
 			// set the content type as json
 			header("Content-type: application/json");
@@ -338,17 +345,11 @@ class API extends CI_Controller {
 		$apiKeyResponse = $this->api_model->authorize($obj['key'] ?? '');
 
 		if (!isset($obj['key']) || $apiKeyResponse == 0) {
-		   http_response_code(401);
-		   log_message("Debug",'API Call 401. Invalid API Key: '.($obj['key'] ?? 'N/A'));
-		   echo json_encode(['status' => 'failed', 'reason' => "missing or wrong api key"]);
-		   die();
+			$this->_missing_or_wrong_api_key();
 		}
 
 		if ($apiKeyResponse == 1) {
-			http_response_code(403);
-			log_message("Debug",'API Call 403. Insufficient permissions for API Key');
-			echo json_encode(['status' => 'failed', 'reason' => "API key does not have write permissions"]);
-			die();
+			$this->_insufficient_permissions_api_key();
 		}
 
 		$userid = $this->api_model->key_userid($obj['key']);
@@ -1490,9 +1491,7 @@ class API extends CI_Controller {
 
 		// Authorization
 		if (!isset($obj['key']) || $this->api_model->authorize($obj['key']) == 0) {
-			http_response_code(401);
-			echo json_encode(['status' => 'failed', 'reason' => "missing or wrong api key"]);
-			return;
+			$this->_missing_or_wrong_api_key();
 		}
 
 		// Validate station_id
@@ -1595,9 +1594,7 @@ class API extends CI_Controller {
 		}
 
 		if ($this->api_model->access($obj['key']) == "No Key Found" || $this->api_model->access($obj['key']) == "Key Disabled") {
-			http_response_code(401);
-			echo json_encode(['status' => 'error', 'message' => 'Auth Error, invalid key']);
-			return;
+			$this->_missing_or_wrong_api_key();
 		}
 
 		$this->load->model('club_model');
@@ -1605,9 +1602,7 @@ class API extends CI_Controller {
 		$created_by = $this->api_model->key_created_by($obj['key']);
 		$club_perm = $this->club_model->get_permission_noui($userid,$created_by);
 		if (($userid == $created_by) || (($club_perm ?? 0) != 9)) { // not club officer
-			http_response_code(401);
-			echo json_encode(['status' => 'error', 'message' => 'Auth Error, not enough permissions for this operation']);
-			return;
+			$this->_insufficient_permissions_api_key();
 		}
 
 		$memberlist = $this->club_model->get_club_members($userid);
