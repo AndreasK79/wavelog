@@ -110,7 +110,7 @@
                 <span class="small text-muted"><?= __("Hours ago (left-most: now)"); ?></span>
             </div>
             <div class="card-body">
-                <div class="border-top">
+                <div class="border-top amsat-scroll">
                     <?php foreach ($sat_order as $name):
                         $display     = $display_names[$name] ?? $name;
                         $display_esc = htmlspecialchars($display);
@@ -119,7 +119,7 @@
                         $row_total = 0;
                         foreach ($row as $cell) { if ($cell !== null) { $row_total += $cell['total']; } }
                     ?>
-                        <section class="d-flex flex-column flex-lg-row gap-3 py-3 border-bottom">
+                        <section class="amsat-sat d-flex flex-column flex-lg-row gap-3 py-3 border-bottom">
                             <div class="award-grid-prefecture flex-shrink-0">
                                 <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
                                     <span class="fw-bold"><?php
@@ -144,7 +144,7 @@
                                     }
                                 ?></div>
                             </div>
-                            <div class="d-flex flex-wrap amsat-pills">
+                            <div class="d-flex amsat-pills">
                                 <?php for ($col = 0; $col < 24; $col++):
                                     $age  = $col;
                                     $cell = $row[$col] ?? null;

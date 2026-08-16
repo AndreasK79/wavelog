@@ -2412,18 +2412,35 @@ body.map-high-contrast span.grid-text-worked > font { color: rgba(0, 0, 0, 0.4) 
 .amsat-lgnd { display: inline-flex; align-items: center; gap: .4rem; }
 .amsat-lgnd i { font-size: .85rem; }
 
-/* Fixed-width name column so every satellite's pills start aligned */
+/* One shared horizontal scrollbar for the whole grid; the name column
+   stays pinned while the pills scroll under it. */
+.amsat-status .amsat-scroll {
+	overflow-x: auto;
+	scrollbar-width: thin;
+}
+.amsat-status .amsat-sat {
+	width: max-content;
+	min-width: 100%;
+}
+/* Fixed-width, pinned name column so every satellite's pills align */
 .amsat-status .award-grid-prefecture {
 	width: 14rem;
+	position: sticky;
+	left: 0;
+	z-index: 1;
+	padding-right: .75rem;
+	background-color: var(--bs-card-bg, var(--bs-body-bg));
 }
 @media (max-width: 991.98px) {
 	.amsat-status .award-grid-prefecture {
 		width: auto;
+		position: static;
 	}
 }
-/* Pill row: slightly tighter than the JCC grid's gap-2 */
+/* Pill strip: one line per satellite, never wraps */
 .amsat-status .amsat-pills {
 	gap: .3rem;
+	flex-wrap: nowrap;
 }
 .amsat-status .amsat-sat-aos {
 	font-size: .78rem;
@@ -2445,6 +2462,7 @@ body.map-high-contrast span.grid-text-worked > font { color: rgba(0, 0, 0, 0.4) 
 .amsat-status .amsat-slot {
 	width: 2.25rem;
 	height: 2.25rem;
+	flex: 0 0 auto; /* keep full size inside the scrolling strip */
 	padding: .2rem .25rem;
 	font-size: .78rem; font-weight: 600;
 	cursor: help;
