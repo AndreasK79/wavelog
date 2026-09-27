@@ -3,7 +3,29 @@
 	#wabtoolTable thead th {
 		text-align: left !important;
 	}
+
+	/* In the WAB map modal the square names are the primary information:
+	   bigger than the maidenhead overlay labels */
+	.bootstrap-dialog .text-labels,
+	.bootstrap-dialog .confirmed-labels,
+	.bootstrap-dialog .worked-labels {
+		font-size: 1.4rem;
+		font-weight: 700;
+	}
+
+	.bootstrap-dialog .grid-text font {
+		font-size: 0.8rem !important; /* beats the maidenhead inline per-zoom size */
+	}
 </style>
+
+<script>
+	/* wab.js is shared with the awards page; these globals let its legend and
+	   custom colors render inside the map modal too */
+	let user_map_custom = JSON.parse('<?php echo $user_map_custom; ?>');
+	var lang_wab_total_squares = "<?= __("Total squares"); ?>";
+	var lang_wab_total_worked = "<?= __("Total worked"); ?>";
+	var lang_wab_squares_by_dxcc = "<?= __("Squares by DXCC"); ?>";
+</script>
 
 <div class="container px-3 px-lg-4 mt-3 mb-3">
 
@@ -33,7 +55,7 @@
 				<?= __("Apply Selected"); ?><div class="ld ld-ring ld-spin"></div>
 			</button>
 			<div class="applyresult"></div>
-			<div class="scanresult"></div>
+			<div class="scanresult" data-confirmlegend="<?= __("Q = QSL card, L = LoTW, E = eQSL, Z = QRZ.com, C = Clublog"); ?>"></div>
 		</div>
 	</div>
 
