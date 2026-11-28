@@ -109,6 +109,26 @@
 
 								<div class="filter-section">
 									<div class="mb-3 row">
+										<div class="w-100 d-flex align-items-center gap-2 mb-2"><i class="fas fa-circle-check"></i><?= __("Status"); ?></div>
+										<div class="col-md-10">
+											<div class="form-check-inline">
+												<input class="btn-check" type="checkbox" name="worked" id="worked" value="1" checked>
+												<label class="btn btn-outline-primary btn-sm" for="worked"><?= __("Show worked"); ?></label>
+											</div>
+											<div class="form-check-inline">
+												<input class="btn-check" type="checkbox" name="confirmed" id="confirmed" value="1" checked>
+												<label class="btn btn-outline-primary btn-sm" for="confirmed"><?= __("Show confirmed"); ?></label>
+											</div>
+											<div class="form-check-inline">
+												<input class="btn-check" type="checkbox" name="notworked" id="notworked" value="1" checked>
+												<label class="btn btn-outline-primary btn-sm" for="notworked"><?= __("Show not worked"); ?></label>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<div class="filter-section">
+									<div class="mb-3 row">
 										<div class="w-100 d-flex align-items-center gap-2 mb-2"><i class="fas fa-envelope-open-text"></i><?= __("Confirmation"); ?></div>
 										<div class="col-md-10">
 											<div class="form-check-inline">

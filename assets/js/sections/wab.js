@@ -172,12 +172,20 @@ function wabmap(data) {
 	var confirmedcount = 0;
 	var workedcount = 0;
 
-	// Count worked/confirmed squares (each square is one MultiLineString outline)
+	// Status filter (filter dropdown): which statuses to draw at all
+	var statusShown = {
+		confirmed: $('#confirmed').is(':checked'),
+		worked: $('#worked').is(':checked'),
+		notworked: $('#notworked').is(':checked')
+	};
+
+	// Count worked/confirmed squares (each square is one MultiLineString outline),
+	// only those that are shown
 	wab_squares.responseJSON.features.forEach(function(feature) {
 		if (feature.geometry.type == 'MultiLineString' && feature.properties && feature.properties.name) {
-			if (data[feature.properties.name] == 'C') {
+			if (data[feature.properties.name] == 'C' && statusShown.confirmed) {
 				confirmedcount++;
-			} else if (data[feature.properties.name] == 'W') {
+			} else if (data[feature.properties.name] == 'W' && statusShown.worked) {
 				workedcount++;
 			}
 		}
@@ -210,6 +218,7 @@ function wabmap(data) {
 		outlineStatus[status].push(feature);
 	});
 	['notworked', 'worked', 'confirmed'].forEach(function(status) {
+		if (!statusShown[status]) { return; } // hidden by the status filter
 		var color = status == 'confirmed' ? confirmedColor : status == 'worked' ? workedColor : notworkedColor;
 		L.geoJSON({ type: 'FeatureCollection', features: outlineStatus[status] }, {
 			style: function() {
@@ -226,7 +235,9 @@ function wabmap(data) {
 	wab_squares.responseJSON.features.forEach(function(feature) {
 		if (!feature.geometry || feature.geometry.type != 'Point' || !feature.properties || !feature.properties.name) { return; }
 		var name = feature.properties.name;
-		var color = data[name] == 'C' ? confirmedColor : data[name] == 'W' ? workedColor : notworkedColor;
+		var status = data[name] == 'C' ? 'confirmed' : data[name] == 'W' ? 'worked' : 'notworked';
+		if (!statusShown[status]) { return; } // hidden by the status filter
+		var color = status == 'confirmed' ? confirmedColor : status == 'worked' ? workedColor : notworkedColor;
 		var chip = L.marker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
 			icon: wabChipIcon(name, color)
 		});
