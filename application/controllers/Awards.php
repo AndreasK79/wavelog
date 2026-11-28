@@ -2592,18 +2592,18 @@ class Awards extends CI_Controller {
     }
 
     public function wab_map() {
-	    $postdata['qsl'] = $this->security->xss_clean($this->input->post('qsl'));
-	    $postdata['lotw'] = $this->security->xss_clean($this->input->post('lotw'));
-	    $postdata['eqsl'] = $this->security->xss_clean($this->input->post('eqsl'));
-	    $postdata['qrz'] = $this->security->xss_clean($this->input->post('qrz'));
-	    $postdata['clublog'] = $this->security->xss_clean($this->input->post('clublog'));
-	    $postdata['worked'] = $this->security->xss_clean($this->input->post('worked'));
-	    $postdata['confirmed'] = $this->security->xss_clean($this->input->post('confirmed'));
-	    $postdata['notworked'] = $this->security->xss_clean($this->input->post('notworked'));
-	    $postdata['band'] = $this->security->xss_clean($this->input->post('band'));
-	    $postdata['mode'] = $this->security->xss_clean($this->input->post('mode'));
-	    $postdata['sat'] = $this->security->xss_clean($this->input->post('sat'));
-	    $postdata['orbit'] = $this->security->xss_clean($this->input->post('orbit'));
+	    $postdata['qsl'] = ($this->input->post('qsl',true) ?? 0) == 0 ? NULL: 1;
+	    $postdata['lotw'] = ($this->input->post('lotw',true) ?? 0) == 0 ? NULL: 1;
+	    $postdata['eqsl'] = ($this->input->post('eqsl',true) ?? 0) == 0 ? NULL: 1;
+	    $postdata['qrz'] = ($this->input->post('qrz',true) ?? 0) == 0 ? NULL: 1;
+	    $postdata['clublog'] = ($this->input->post('clublog',true) ?? 0) == 0 ? NULL: 1;
+	    $postdata['worked'] = $this->input->post('worked', true);
+	    $postdata['confirmed'] = $this->input->post('confirmed', true);
+	    $postdata['notworked'] = $this->input->post('notworked', true);
+	    $postdata['band'] = $this->input->post('band', true);
+	    $postdata['mode'] = $this->input->post('mode', true);
+	    $postdata['sat'] = $this->input->post('sat', true);
+	    $postdata['orbit'] = $this->input->post('orbit', true);
 
 	    $this->load->model('logbooks_model');
 	    $logbooks_locations_array = $this->logbooks_model->list_logbook_relationships($this->session->userdata('active_station_logbook'));
@@ -2623,18 +2623,18 @@ class Awards extends CI_Controller {
     }
 
     public function wab_list() {
-	    $postdata['qsl'] = $this->security->xss_clean($this->input->post('qsl'));
-	    $postdata['lotw'] = $this->security->xss_clean($this->input->post('lotw'));
-	    $postdata['eqsl'] = $this->security->xss_clean($this->input->post('eqsl'));
-	    $postdata['qrz'] = $this->security->xss_clean($this->input->post('qrz'));
-	    $postdata['clublog'] = $this->security->xss_clean($this->input->post('clublog'));
-	    $postdata['worked'] = $this->security->xss_clean($this->input->post('worked'));
-	    $postdata['confirmed'] = $this->security->xss_clean($this->input->post('confirmed'));
-	    $postdata['notworked'] = $this->security->xss_clean($this->input->post('notworked'));
-	    $postdata['band'] = $this->security->xss_clean($this->input->post('band'));
-	    $postdata['mode'] = $this->security->xss_clean($this->input->post('mode'));
-	    $postdata['sat'] = $this->security->xss_clean($this->input->post('sat'));
-	    $postdata['orbit'] = $this->security->xss_clean($this->input->post('orbit'));
+	    $postdata['qsl'] = ($this->input->post('qsl',true) ?? 0) == 0 ? NULL: 1;
+	    $postdata['lotw'] = ($this->input->post('lotw',true) ?? 0) == 0 ? NULL: 1;
+	    $postdata['eqsl'] = ($this->input->post('eqsl',true) ?? 0) == 0 ? NULL: 1;
+	    $postdata['qrz'] = ($this->input->post('qrz',true) ?? 0) == 0 ? NULL: 1;
+	    $postdata['clublog'] = ($this->input->post('clublog',true) ?? 0) == 0 ? NULL: 1;
+	    $postdata['worked'] = $this->input->post('worked', true);
+	    $postdata['confirmed'] = $this->input->post('confirmed', true);
+	    $postdata['notworked'] = $this->input->post('notworked', true);
+	    $postdata['band'] = $this->input->post('band', true);
+	    $postdata['mode'] = $this->input->post('mode', true);
+	    $postdata['sat'] = $this->input->post('sat', true);
+	    $postdata['orbit'] = $this->input->post('orbit', true);
 
 	    $this->load->model('logbooks_model');
 	    $logbooks_locations_array = $this->logbooks_model->list_logbook_relationships($this->session->userdata('active_station_logbook'));
