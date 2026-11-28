@@ -2580,6 +2580,7 @@ class Awards extends CI_Controller {
 	    $footerData = [];
 	    $footerData['scripts'] = [
 		    'assets/js/leaflet/geocoding.js',
+		    'assets/js/leaflet/leaflet.markercluster.js',
 		    'assets/js/sections/wab.js'
 	    ];
 

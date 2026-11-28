@@ -1304,6 +1304,20 @@ a.ref-popup-ref .fas { font-size: 0.7rem; opacity: 0.7; }
 }
 .wab-label { background: rgba(214, 39, 39, 0.9); }
 
+.wab-square-chip {
+	text-align: center;
+}
+.wab-square-chip > span {
+	display: block;
+	font-size: 9px;
+	font-weight: 700;
+	line-height: 14px;
+	text-align: center;
+	border-radius: 3px;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
 /* Blocking loading overlay for the activation planner map */
 .gl-loading {
 	position: absolute;

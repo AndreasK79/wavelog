@@ -1,5 +1,29 @@
  let confirmedColor = user_map_custom.qsoconfirm.color;
 let workedColor = user_map_custom.qso.color;
+let notworkedColor = '#6c757d'; // dark neutral grey: unworked squares stay visible but recede
+
+function wabChipIcon(name, color) {
+	var c = wabChipContrast(color);
+	return L.divIcon({
+		className: 'wab-square-chip',
+		html: '<span style="background: ' + color + '; color: ' + c.text + '; border: 1px solid ' + c.border + ';">' + name + '</span>',
+		iconSize: [36, 14],
+		iconAnchor: [18, 7]
+	});
+}
+
+function wabChipContrast(bg) {
+	var short = /^#([0-9a-f]{3})$/i.exec(bg || '');
+	if (short) { bg = '#' + short[1][0] + short[1][0] + short[1][1] + short[1][1] + short[1][2] + short[1][2]; }
+	var m = /^#([0-9a-f]{6})$/i.exec(bg || '');
+	if (!m) { return { text: '#fff', border: 'rgba(255,255,255,0.45)' }; }
+	var n = parseInt(m[1], 16);
+	// YIQ brightness: >160 counts as light
+	var yiq = (299 * ((n >> 16) & 255) + 587 * ((n >> 8) & 255) + 114 * (n & 255)) / 1000;
+	return yiq > 160
+		? { text: '#212529', border: 'rgba(0,0,0,0.35)' }
+		: { text: '#fff', border: 'rgba(255,255,255,0.45)' };
+}
 
 $('#band').change(function(){
 	var band = $("#band option:selected").text();
@@ -148,6 +172,17 @@ function wabmap(data) {
 	var confirmedcount = 0;
 	var workedcount = 0;
 
+	// Count worked/confirmed squares (each square is one MultiLineString outline)
+	wab_squares.responseJSON.features.forEach(function(feature) {
+		if (feature.geometry.type == 'MultiLineString' && feature.properties && feature.properties.name) {
+			if (data[feature.properties.name] == 'C') {
+				confirmedcount++;
+			} else if (data[feature.properties.name] == 'W') {
+				workedcount++;
+			}
+		}
+	});
+
 	// Each square is drawn as a MultiLineString outline plus a Point label, so count unique names
 	var totalsquares = new Set(wab_squares.responseJSON.features.filter(function(feature) {
 		return feature.geometry.type == 'MultiLineString';
@@ -168,94 +203,39 @@ function wabmap(data) {
 		attribution: attributionInfo
 	}).addTo(map);
 
-	// Add requested external GeoJSON to map
-	var geo_wab_squares = L.geoJSON(wab_squares.responseJSON, {
-		style: function(feature) {
-			if (feature.properties && feature.properties.name) {
-				if (data[feature.properties.name] == 'C') {
-					confirmedcount++;
-					return {
-						fillColor: confirmedColor,
-						fill: true,
-						fillOpacity: 0.8,
-						className: 'confirmed-square'
-					};
-				}
-				if (data[feature.properties.name] == 'W') {
-					workedcount++;
-					return {
-						fillColor: workedColor,
-						fill: true,
-						fillOpacity: 0.8,
-						className: 'worked-square'
-					};
-				}
+	var outlineStatus = { notworked: [], worked: [], confirmed: [] };
+	wab_squares.responseJSON.features.forEach(function(feature) {
+		if (!feature.geometry || feature.geometry.type == 'Point' || !feature.properties || !feature.properties.name) { return; }
+		var status = data[feature.properties.name] == 'C' ? 'confirmed' : data[feature.properties.name] == 'W' ? 'worked' : 'notworked';
+		outlineStatus[status].push(feature);
+	});
+	['notworked', 'worked', 'confirmed'].forEach(function(status) {
+		var color = status == 'confirmed' ? confirmedColor : status == 'worked' ? workedColor : notworkedColor;
+		L.geoJSON({ type: 'FeatureCollection', features: outlineStatus[status] }, {
+			style: function() {
+				return { color: color, weight: 2, opacity: 0.85, interactive: false };
 			}
-		},
-		pointToLayer: function(feature, latlng) {
-			if (feature.properties && feature.properties.name) {
-				// my-div-icon gives the label white-space: nowrap (Leaflet's
-				// 12x12px default divIcon box would stack the chars vertically)
-				var classname = 'my-div-icon text-labels';
+		}).addTo(map);
+	});
 
-				if (data[feature.properties.name] == 'C') {
-					classname = 'my-div-icon confirmed-labels';
-				}
-				if (data[feature.properties.name] == 'W') {
-					classname = 'my-div-icon worked-labels';
-				}
-
-				// Create a custom icon that displays the name from the GeoJSON data
-				var labelIcon = L.divIcon({
-					className: classname, // Set class for CSS styling
-					html: feature.properties.name
-				});
-
-				var sqmarker = L.marker(latlng, {
-					icon: labelIcon
-				});
-
-				// Create a marker at the location of the point
-				return sqmarker;
-			}
-		},
-		onEachFeature: function(feature, layer) {
-			layer.on('click', function() {
-				// Code to execute when the area is clicked
-				displayContactsOnMap($("#wabmap"), feature.properties.name, $('#band').val(), $('#sats').val(), $('#orbits').val(), $('#mode').val(), 'WAB');
-			});
-		}
-	}).addTo(map);
-	// Function to update labels based on zoom level
-	function updateLabels() {
-		var currentZoom = map.getZoom();
-		geo_wab_squares.eachLayer(function(layer) {
-			if (currentZoom >= 8) {
-				// Show squares if zoom level is 8 or higher
-				layer.getElement().style.display = 'block';
-			} else {
-				// Hide squares if zoom level is less than 8
-				layer.getElement().style.display = 'none';
-			}
+	var cluster = L.markerClusterGroup({
+		chunkedLoading: true,
+		maxClusterRadius: 40,
+		showCoverageOnHover: false
+	});
+	wab_squares.responseJSON.features.forEach(function(feature) {
+		if (!feature.geometry || feature.geometry.type != 'Point' || !feature.properties || !feature.properties.name) { return; }
+		var name = feature.properties.name;
+		var color = data[name] == 'C' ? confirmedColor : data[name] == 'W' ? workedColor : notworkedColor;
+		var chip = L.marker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
+			icon: wabChipIcon(name, color)
 		});
-		if (currentZoom >= 9) {
-			$('.text-labels').show();
-			$('.leaflet-interactive').show();
-		} else if (currentZoom == 8) {
-			$('.text-labels').hide();
-		} else {
-			$('.leaflet-interactive').hide();
-			$('.text-labels').hide();
-		}
-		$('.confirmed-square').show();
-		$('.worked-square').show();
-	}
-
-	// Update labels when the map zoom changes
-	map.on('zoomend', updateLabels);
-
-	// Update labels immediately after adding the GeoJSON data to the map
-	updateLabels();
+		chip.on('click', function() {
+			displayContactsOnMap($("#wabmap"), name, $('#band').val(), $('#sats').val(), $('#orbits').val(), $('#mode').val(), 'WAB');
+		});
+		cluster.addLayer(chip);
+	});
+	map.addLayer(cluster);
 
 	// Coordinates readout under the map (latitude/longitude/gridsquare)
 	map.on('mousemove', onMapMove);
